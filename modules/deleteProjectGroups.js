@@ -1,20 +1,20 @@
 const canvas = require('canvas-wrapper');
 
-module.exports = (sourceCourseID, targetCourseID, groupData) => {
+module.exports = (sourceCourseID, targetCourseID, groupData, logger) => {
     return new Promise((resolve, reject) => {
         canvas.get(`/api/v1/courses/${targetCourseID}/group_categories?search_term=Project Groups`, (err, categories) => {
             if (err) return reject(err);
 
             var projectGroups = categories.find(c => c.name === 'Project Groups');
 
-            if (projectGroups.name === 'Project Groups') {
+            if (projectGroups !== undefined) {
                 canvas.delete(`/api/v1/group_categories/${projectGroups.id}`, (err) => {
                     if (err) return reject(err);
-                    console.log('Default "Project Groups" Group Category has been removed.');
+                    logger.message('Default "Project Groups" Group Category has been removed.');
                     resolve(groupData);
                 });
             } else {
-                console.log('"Project Groups" default category was found in the course.');
+                logger.message('"Project Groups" default category was not found in the course.');
                 resolve(groupData);
             }
         });

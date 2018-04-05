@@ -1,93 +1,90 @@
-// Get all discussions
-// Filter to only group discussions
-// Identify which group each is attached to, store the name of the discussion (and type?)
-// Associate same discussion on other side
 const canvas = require('canvas-wrapper');
 const asyncLib = require('async');
 
-module.exports = (sourceCourseID, targetCourseID, groupData) => {
 
-    function getDiscussions() {
+module.exports = (sourceCourseID, targetCourseID, groupData, logger) => {
+
+    /* Retrieves all discussions from source course and then filters to just group discussions */
+    function getSourceDiscussions() {
         return new Promise((resolve, reject) => {
             canvas.get(`/api/v1/courses/${sourceCourseID}/discussion_topics`, (err, discussions) => {
                 if (err) return reject(err);
-                /* Filter to just group discussions */
                 discussions = discussions.filter(discussion => discussion.group_category_id !== null);
-                discussions.forEach(discussion => {
-                    // Get the group category this discussion is under
-                    var owningCategory = groupData.find(category => discussion.group_category_id === category.id);
-                    // Save the discussion titles
-                    if (owningCategory.discussions) {
-                        owningCategory.discussions.push(discussion.title);
-                    } else {
-                        owningCategory.discussions = [discussion.title];
-                    }
-                });
-                resolve();
+                resolve(discussions);
             });
         });
     }
 
-    function getTargetDiscussion(discussionTitle) {
+    /* Determines the ID for the corresponding group in the target course */
+    function getNewGroup(discussion) {
         return new Promise((resolve, reject) => {
-            canvas.get(`/api/v1/courses/${targetCourseID}/discussion_topics?search_term=${discussionTitle}`, (err, discussions) => {
-                if (err) return reject(err);
-                // Give us the first one found (since it should only ever return one)
-                resolve(discussions[0]);
-            });
-        });
-    }
-
-    function associateDiscussion(category, callback) {
-
-        asyncLib.each(category.discussions, (discussionTitle, eachCallback) => {
-            getTargetDiscussion(discussionTitle)
-                .then(discussion => {
-
-                    if (!discussion) {
-                        console.log(`${discussionTitle} discussion does not exist in the target course. Unable to associate items.`);
-                        eachCallback(null);
-                        return;
-                    }
-
-                    canvas.put(`/api/v1/courses/${targetCourseID}/discussion_topics/${discussion.id}`, {
-                        group_category_id: category.newCategory.id
-                    }, (err, updatedDiscussion) => {
-                        if (err) {
-                            eachCallback(err);
-                            return;
-                        }
-                        console.log('DISCUSSION ASSOCIATED: ' + updatedDiscussion.title);
-                        eachCallback(null);
-                    });
-                })
-                .catch(e => eachCallback(e));
-
-        }, (err) => {
-            if (err) {
-                callback(err);
-                return;
+            var category = groupData.find(category => category.id === discussion.group_category_id);
+            if (category) {
+                discussion.newCategory = category.newCategory;
+                resolve(discussion);
+            } else {
+                reject(new Error(`DISCUSSION: Unable to identify the category ${discussion.title} originally belonged to.`));
             }
-            callback(null);
         });
     }
 
-    function associateTargetDiscussions() {
+    /* Gets the corresponding discussion from the target course, then assigns it to the discussion object */
+    function getTargetDiscussion(discussion) {
         return new Promise((resolve, reject) => {
-            var categoriesWithDiscussions = groupData.filter(category => category.discussions !== undefined);
-            asyncLib.each(categoriesWithDiscussions, associateDiscussion, (err) => {
+            canvas.get(`/api/v1/courses/${targetCourseID}/discussion_topics?search_term=${discussion.title}`, (err, discussions) => {
                 if (err) return reject(err);
-                resolve();
+                if (discussions[0].title === discussion.title) {
+                    discussion.targetDiscussion = discussions[0];
+                    resolve(discussion);
+                } else {
+                    logger.warning(`DISCUSSION: Unable to locate ${discussion.title} in the Target Course.`);
+                    reject(null);
+                }
+            });
+        });
+    }
+
+    /* Associates the discussion to its group in the target course and gives it it's overrides */
+    function associateDiscussion(discussion) {
+        return new Promise((resolve, reject) => {
+            var putObj = {
+                group_category_id: discussion.newCategory.id,
+            };
+
+            // Associate the Target Course discussion with its group
+            canvas.put(`/api/v1/courses/${targetCourseID}/discussion_topics/${discussion.targetDiscussion.id}`, putObj, (err, updatedDiscussion) => {
+                if (err) return reject(err);
+                logger.log('Discussions Associated', {
+                    'Name': updatedDiscussion.title,
+                    'ID': updatedDiscussion.id,
+                    'Group Category': discussion.newCategory.name,
+                });
+                resolve(discussion);
             });
         });
     }
 
     return new Promise((resolve, reject) => {
-        getDiscussions()
-            .then(associateTargetDiscussions)
-            .then(() => {
-                console.log('Discussion association complete.');
-                resolve(groupData);
+        getSourceDiscussions()
+            .then(discussions => {
+                asyncLib.each(discussions, (discussion, callback) => {
+                    getNewGroup(discussion)
+                        .then(getTargetDiscussion)
+                        .then(associateDiscussion)
+                        .then((updatedDiscussion) => {
+                            callback(null);
+                        })
+                        .catch(err => {
+                            if (err === null) {
+                                callback(null);
+                            } else {
+                                callback(err);
+                            }
+                        });
+                }, (err) => {
+                    if (err) return reject(err);
+                    resolve();
+                });
             })
             .catch(reject);
     });

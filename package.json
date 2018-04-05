@@ -12,6 +12,7 @@
   "dependencies": {
     "async": "^2.6.0",
     "canvas-wrapper": "github:byuitechops/canvas-wrapper",
-    "enquirer": "^1.0.3"
+    "enquirer": "^1.0.3",
+    "logger": "github:byuitechops/logger"
   }
 }
