@@ -29,9 +29,7 @@ module.exports = (sourceCourseID, targetCourseID, deleteDefaultCategory) => {
                 return groupData;
             })
             .then(resolve)
-            .catch(err => {
-                logger.error(err);
-            });
+            .catch(reject);
     });
 
 
