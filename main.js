@@ -28,6 +28,11 @@ module.exports = (sourceCourseID, targetCourseID, deleteDefaultCategory) => {
                 }
                 return groupData;
             })
+            .then(groupData =>{
+                logger.htmlReportAll();
+                logger.jsonReportAll();
+                return groupData;
+            })
             .then(resolve)
             .catch(reject);
     });

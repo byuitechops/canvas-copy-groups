@@ -15,7 +15,7 @@ module.exports = (sourceCourseID, targetCourseID, groupData, logger) => {
                 storage_quota_mb: group.storage_quota_mb
             };
 
-            /* POST to create new category */
+            /* POST to create new group inside a category */
             canvas.post(`/api/v1/group_categories/${category.newCategory.id}/groups`, groupSettings, (err, newGroup) => {
                 if (err) {
                     eachCallback(err);

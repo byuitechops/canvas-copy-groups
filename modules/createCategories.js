@@ -28,7 +28,7 @@ module.exports = (sourceCourseID, targetCourseID, groupData, logger) => {
                 // If it is already being used, remove the category from the category array
                 if (err.message.includes('already in use')) {
                     logger.warning(`CATEGORY EXISTS: ${category.name} is already in the course.`);
-                    getExistingCategory(newCategory);
+                    // getExistingCategory(newCategory);
                     category.existing = true;
                     callback(null);
                     return;
