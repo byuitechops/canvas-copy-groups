@@ -26,11 +26,11 @@ module.exports = (sourceCourseID, targetCourseID, deleteDefaultCategory) => {
                 if (deleteDefaultCategory === true) {
                     return deleteProjectGroups(sourceCourseID, targetCourseID, groupData, logger);
                 }
-                return groupData;
+                return {groupData, logger};
             })
-            .then(groupData =>{
-                logger.htmlReportAll();
-                logger.jsonReportAll();
+            .then(({groupData, logger}) =>{
+                logger.htmlReport('./htmlReport');
+                logger.jsonReport('./jsonReport');
                 return groupData;
             })
             .then(resolve)
