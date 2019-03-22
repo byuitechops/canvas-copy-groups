@@ -28,18 +28,18 @@
   "_where": "C:\\Users\\sethchilders92\\Documents\\canvas-copy-groups-wrapper",
   "author": "Zachary Williams",
   "dependencies": {
-    "async": "^2.6.0",
+    "async": "^2.6.2",
     "canvas-api-wrapper": "^3.3.5",
     "canvas-wrapper": "github:byuitechops/canvas-wrapper",
-    "enquirer": "^1.0.3",
+    "enquirer": "^2.3.0",
     "logger": "github:byuitechops/logger"
   },
   "description": "Copies groups from one course to another.",
   "license": "MIT",
-  "main": "main.js",
+  "main": "bin.js",
   "name": "canvas-copy-groups",
   "scripts": {
-    "start": "node cli.js",
+    "start": "node bin.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "version": "1.0.0",
@@ -51,5 +51,19 @@
   "bugs": {
     "url": "https://github.com/byuitechops/canvas-copy-groups/issues"
   },
-  "homepage": "https://github.com/byuitechops/canvas-copy-groups#readme"
+  "homepage": "https://github.com/byuitechops/canvas-copy-groups#readme",
+  "eslintConfig": {
+    "env": {
+      "es6": true,
+      "node": true,
+      "browser": true
+    },
+    "parserOptions": {
+      "ecmaVersion": 6,
+      "sourceType": "module",
+      "ecmaFeatures": {
+        "jsx": true
+      }
+    }
+  }
 }

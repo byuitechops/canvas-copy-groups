@@ -12,8 +12,4 @@ enquirer.question('deleteProjectGroups', {
     transform: input => (input === 'y')
 });
 
-enquirer.ask()
-    .then(answers => {
-        return copyGroups(answers.sourceCourseID, answers.targetCourseID, answers.deleteProjectGroups);
-    })
-    .catch(console.error);
+enquirer.ask().then(answers => answers).catch(console.error);

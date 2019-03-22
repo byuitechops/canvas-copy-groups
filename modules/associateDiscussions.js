@@ -2,7 +2,7 @@ const canvas = require('canvas-wrapper');
 const asyncLib = require('async');
 
 
-module.exports = (sourceCourseID, targetCourseID, groupData, logger) => {
+module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
 
     /* Retrieves all discussions from source course and then filters to just group discussions */
     function getSourceDiscussions() {
@@ -37,7 +37,7 @@ module.exports = (sourceCourseID, targetCourseID, groupData, logger) => {
                     discussion.targetDiscussion = discussions[0];
                     resolve(discussion);
                 } else {
-                    logger.warning(`DISCUSSION: Unable to locate ${discussion.title} in the Target Course.`);
+                    console.log(`DISCUSSION: Unable to locate ${discussion.title} in the Target Course.`);
                     reject(null);
                 }
             });
@@ -54,7 +54,7 @@ module.exports = (sourceCourseID, targetCourseID, groupData, logger) => {
             // Associate the Target Course discussion with its group
             canvas.put(`/api/v1/courses/${targetCourseID}/discussion_topics/${discussion.targetDiscussion.id}`, putObj, (err, updatedDiscussion) => {
                 if (err) return reject(err);
-                logger.log('Discussions Associated', {
+                console.log('Discussions Associated', {
                     'Name': updatedDiscussion.title,
                     'ID': updatedDiscussion.id,
                     'Group Category': discussion.newCategory.name,

@@ -1,7 +1,7 @@
 const canvas = require('canvas-wrapper');
 const asyncLib = require('async');
 
-module.exports = (sourceCourseID, targetCourseID, groupData, logger) => {
+module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
 
     function getExistingCategory(category) {
         return new Promise((resolve, reject) => {
@@ -27,7 +27,7 @@ module.exports = (sourceCourseID, targetCourseID, groupData, logger) => {
             if (err) {
                 // If it is already being used, remove the category from the category array
                 if (err.message.includes('already in use')) {
-                    logger.warning(`CATEGORY EXISTS: ${category.name} is already in the course.`);
+                    console.log(`CATEGORY EXISTS: ${category.name} is already in the course.`);
                     // getExistingCategory(newCategory);
                     category.existing = true;
                     callback(null);
@@ -37,7 +37,7 @@ module.exports = (sourceCourseID, targetCourseID, groupData, logger) => {
             } else {
                 category.newCategory = newCategory;
                 category.existing = false;
-                logger.log('Group Categories Created', {
+                console.log('Group Categories Created', {
                     'Name': newCategory.name,
                     'ID': newCategory.id,
                 });

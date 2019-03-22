@@ -2,7 +2,7 @@ const canvas = require('canvas-wrapper');
 const asyncLib = require('async');
 
 
-module.exports = (sourceCourseID, targetCourseID, groupData, logger) => {
+module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
 
     /* Retrieves all assignments from source course and then filters to just group assignments */
     function getSourceAssignments() {
@@ -37,7 +37,7 @@ module.exports = (sourceCourseID, targetCourseID, groupData, logger) => {
                     assignment.targetAssignment = assignments[0];
                     resolve(assignment);
                 } else {
-                    logger.warning(`ASSIGNMENT: Unable to locate ${assignment.name} in the Target Course.`);
+                    console.log(`ASSIGNMENT: Unable to locate ${assignment.name} in the Target Course.`);
                     reject(null);
                 }
             });
@@ -68,7 +68,7 @@ module.exports = (sourceCourseID, targetCourseID, groupData, logger) => {
             // Associate the Target Course assignment with its group
             canvas.put(`/api/v1/courses/${targetCourseID}/assignments/${assignment.targetAssignment.id}`, putObj, (err, updatedAssignment) => {
                 if (err) return reject(err);
-                logger.log('Assignments Associated', {
+                console.log('Assignments Associated', {
                     'Name': updatedAssignment.name,
                     'ID': updatedAssignment.id,
                     'Group Category': assignment.newCategory.name,
@@ -108,7 +108,7 @@ module.exports = (sourceCourseID, targetCourseID, groupData, logger) => {
                             callback(err);
                             return;
                         }
-                        logger.log('Assignment Overrides Updated', {
+                        console.log('Assignment Overrides Updated', {
                             'Name': assignment.name,
                             'ID': updatedAssignment.id,
                             'Group Category': assignment.newCategory.name,
