@@ -22,7 +22,8 @@ module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
                     return;
                 }
                 category.newCategory.newGroups.push(newGroup);
-                console.log('Groups Created', {
+                report.data.push({
+                    message: 'Groups Created',
                     'Name': newGroup.name,
                     'ID': newGroup.id,
                     'Category': category.newCategory.name

@@ -1,4 +1,4 @@
-const { main } = require('./main.js');
+const main = require('./main.js');
 const { prompt } = require('enquirer');
 
 async function getInput() {
@@ -34,19 +34,14 @@ async function getInput() {
     return answers;
 }
 
-async function getOutput(report) {
-    console.log(report);
-}
-
 function handleError(error) {
     console.error(error)
     return;
 }
 
-await function start() {
+function start() {
     getInput()
         .then(main)
-        .then(getOutput)
         .catch(handleError);
 }
 

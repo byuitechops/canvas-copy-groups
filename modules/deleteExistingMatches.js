@@ -21,7 +21,8 @@ module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
         // delete the ones that match from the targetCourse
         for (let i = 0; i < categoriesToDelete.length; i++) {
             await canvas.delete(`/api/v1/group_categories/${categoriesToDelete[i].id}`);
-            console.log('Deleted Category from course', {
+            report.data.push({
+                message: 'Deleted Category from course',
                 categoryId: categoriesToDelete[i].id,
                 categoryName: categoriesToDelete[i].name,
                 courseId: targetCourseID

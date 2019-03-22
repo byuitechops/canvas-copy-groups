@@ -10,13 +10,13 @@ module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
             if (projectGroups !== undefined) {
                 canvas.delete(`/api/v1/group_categories/${projectGroups.id}`, (err) => {
                     if (err) return reject(err);
-                    console.message('Default "Project Groups" Group Category has been removed.');
+                    report.data.push({ message: 'Default \"Project Groups\" Group Category has been removed.' });
                     resolve({
                         groupData
                     });
                 });
             } else {
-                console.log('\"Project Groups\" default category was not found in the course.');
+                report.data.push({ message: '\"Project Groups\" default category was not found in the course.' });
                 resolve({
                     groupData
                 });

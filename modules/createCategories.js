@@ -27,7 +27,7 @@ module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
             if (err) {
                 // If it is already being used, remove the category from the category array
                 if (err.message.includes('already in use')) {
-                    console.log(`CATEGORY EXISTS: ${category.name} is already in the course.`);
+                    report.errors.push({ 'CATEGORY_EXISTS': `${category.name} is already in the course.` });
                     // getExistingCategory(newCategory);
                     category.existing = true;
                     callback(null);
@@ -37,7 +37,8 @@ module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
             } else {
                 category.newCategory = newCategory;
                 category.existing = false;
-                console.log('Group Categories Created', {
+                report.data.push({
+                    message: 'Group Categories Created',
                     'Name': newCategory.name,
                     'ID': newCategory.id,
                 });

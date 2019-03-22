@@ -37,7 +37,7 @@ module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
                     assignment.targetAssignment = assignments[0];
                     resolve(assignment);
                 } else {
-                    console.log(`ASSIGNMENT: Unable to locate ${assignment.name} in the Target Course.`);
+                    report.errors.push({ ASSIGNMENT: `Unable to locate ${assignment.name} in the Target Course.` });
                     reject(null);
                 }
             });

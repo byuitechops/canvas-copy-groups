@@ -26,19 +26,38 @@ Inputs will be given based on need, will be given to a wrapper for this project,
 #### Definition of Inputs
 - **Source Course ID**: <_Canvas Course ID Number_>
 - **Target Course ID**: <_Canvas Course ID Number_>
-- **Delete default "Project Groups" category?**: <_y(es) or n(o)_>
+- **Delete default "Project Groups" category?**: <_yes or no_>
+- **Log report to console?**: <_yes or no_>
 
 ---
 
 ### Output Requirements
 #### Destination
-Output directly implemented into Canvas Target Course's Groups Section. Reports will be printed to folders **./htmlReport** and **./jsonReport**.
+Output directly implemented into Canvas Target Course's Groups Section. Reports will be printed to the console if specified to at runtime.
 
 #### Definition of Outputs
 
-- **./htmlReport/Group Copy.html**: HTML report
-- **./jsonReport/Group Copy.json**: JSON report
-- Adds/removes groups within *target* course's group sets.
+- Adds/removes groups within *target* course's group sets directly in Canvas.
+- **Console Report**: ```json
+{
+    data: [
+        {
+            message: 'Group Categories Created',
+            Name: 'Final Project',
+            courseId: '12345'
+        }, {
+            message: 'Groups Created',
+            Name: 'Final Project Group 1',
+            ID: 100000,
+            Category: 'Final Project'
+        }
+    ],
+    errors: [
+        { ASSIGNMENT: 'Unable to locate ASSIGNMENT in the Target Course.' }
+    ],
+    enabled: true || false
+}
+```
 
 ---
 

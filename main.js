@@ -6,10 +6,10 @@ const associateAssignments = require('./modules/associateAssignments.js');
 const associateDiscussions = require('./modules/associateDiscussions.js');
 const deleteProjectGroups = require('./modules/deleteProjectGroups.js');
 
-module.exports = async (input) => {
+module.exports = (input) => {
     const source = input.sourceCourseID,
         target = input.targetCourseID;
-    let report = { enableReport: input.logReport };
+    let report = { enabled: input.logReport, data: [], errors: [] };
     return retrieveGroupData(source, report)
         .then(groupData => {
             return deleteExistingMatches(source, target, groupData, report);
@@ -37,6 +37,11 @@ module.exports = async (input) => {
         })
         .catch((e) => console.error(e))
         .finally(() => {
-            return report;
+            if (report.enabled) {
+                console.log('\nREPORT:');
+                console.log(report.data);
+                console.log('ERRORS:');
+                console.log(report.errors);
+            }
         });
 };
