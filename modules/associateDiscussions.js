@@ -37,7 +37,7 @@ module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
                     discussion.targetDiscussion = discussions[0];
                     resolve(discussion);
                 } else {
-                    report.errors.push({ DISCUSSION: `Unable to locate ${discussion.title} in the Target Course.` });
+                    report.errors.push({ DISCUSSION: `Unable to locate ${discussion.title} in the course ${targetCourseID}.` });
                     reject(null);
                 }
             });
@@ -55,6 +55,7 @@ module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
             canvas.put(`/api/v1/courses/${targetCourseID}/discussion_topics/${discussion.targetDiscussion.id}`, putObj, (err, updatedDiscussion) => {
                 if (err) return reject(err);
                 report.data.push({
+                    courseID: targetCourseID,
                     message: 'Discussions Associated',
                     'Name': updatedDiscussion.title,
                     'ID': updatedDiscussion.id,

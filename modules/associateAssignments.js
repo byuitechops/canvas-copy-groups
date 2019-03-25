@@ -3,7 +3,6 @@ const asyncLib = require('async');
 
 
 module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
-
     /* Retrieves all assignments from source course and then filters to just group assignments */
     function getSourceAssignments() {
         return new Promise((resolve, reject) => {
@@ -37,7 +36,7 @@ module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
                     assignment.targetAssignment = assignments[0];
                     resolve(assignment);
                 } else {
-                    report.errors.push({ ASSIGNMENT: `Unable to locate ${assignment.name} in the Target Course.` });
+                    report.errors.push({ ASSIGNMENT: `Unable to locate ${assignment.name} in the course ${targetCourseID}.` });
                     reject(null);
                 }
             });
@@ -68,7 +67,9 @@ module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
             // Associate the Target Course assignment with its group
             canvas.put(`/api/v1/courses/${targetCourseID}/assignments/${assignment.targetAssignment.id}`, putObj, (err, updatedAssignment) => {
                 if (err) return reject(err);
-                console.log('Assignments Associated', {
+                report.data.push({
+                    courseID: targetCourseID,
+                    message: 'Assignments Associated',
                     'Name': updatedAssignment.name,
                     'ID': updatedAssignment.id,
                     'Group Category': assignment.newCategory.name,
@@ -108,7 +109,9 @@ module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
                             callback(err);
                             return;
                         }
-                        console.log('Assignment Overrides Updated', {
+                        report.data.push({
+                            courseID: targetCourseID,
+                            message: 'Assignment Overrides Updated',
                             'Name': assignment.name,
                             'ID': updatedAssignment.id,
                             'Group Category': assignment.newCategory.name,

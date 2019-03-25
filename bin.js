@@ -34,6 +34,15 @@ async function getInput() {
     return answers;
 }
 
+function getOutput(report) {
+    if (report.enabled) {
+        console.log('\nREPORT:');
+        console.log(report.data);
+        console.log('ERRORS:');
+        console.log(report.errors);
+    }
+}
+
 function handleError(error) {
     console.error(error)
     return;
@@ -42,6 +51,7 @@ function handleError(error) {
 function start() {
     getInput()
         .then(main)
+        .then(getOutput)
         .catch(handleError);
 }
 

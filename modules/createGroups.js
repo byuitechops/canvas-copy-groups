@@ -23,8 +23,9 @@ module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
                 }
                 category.newCategory.newGroups.push(newGroup);
                 report.data.push({
+                    courseID: targetCourseID,
                     message: 'Groups Created',
-                    'Name': newGroup.name,
+                    'Group': newGroup.name,
                     'ID': newGroup.id,
                     'Category': category.newCategory.name
                 });

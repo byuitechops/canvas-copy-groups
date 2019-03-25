@@ -22,10 +22,10 @@ module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
         for (let i = 0; i < categoriesToDelete.length; i++) {
             await canvas.delete(`/api/v1/group_categories/${categoriesToDelete[i].id}`);
             report.data.push({
+                courseID: targetCourseID,
                 message: 'Deleted Category from course',
                 categoryId: categoriesToDelete[i].id,
-                categoryName: categoriesToDelete[i].name,
-                courseId: targetCourseID
+                categoryName: categoriesToDelete[i].name
             });
         }
         return groupData;

@@ -36,12 +36,7 @@ module.exports = (input) => {
             };
         })
         .catch((e) => console.error(e))
-        .finally(() => {
-            if (report.enabled) {
-                console.log('\nREPORT:');
-                console.log(report.data);
-                console.log('ERRORS:');
-                console.log(report.errors);
-            }
+        .then(() => {
+            return report;
         });
 };
