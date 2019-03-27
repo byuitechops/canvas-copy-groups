@@ -20,17 +20,6 @@ async function getInput() {
     }
 }
 
-function loop(courseList) {
-    return Promise.all(courseList.map(coursePair => {
-        return main({
-            sourceCourseID: coursePair.source,
-            targetCourseID: coursePair.target,
-            deleteProjectGroups: true,
-            logReport: true
-        });
-    }));
-}
-
 function getOutput(report) {
     if (report.enabled) {
         console.log('\nREPORT:');
@@ -38,6 +27,17 @@ function getOutput(report) {
         console.log('ERRORS:');
         console.log(report.errors);
     }
+}
+
+function loop(courseList) {
+    return Promise.all(courseList.map(coursePair => {
+        return main({
+            sourceCourseID: coursePair.source,
+            targetCourseID: coursePair.target,
+            deleteProjectGroups: true,
+            logReport: false
+        }).then(getOutput);
+    }));
 }
 
 function handleError(error) {
@@ -48,7 +48,6 @@ function handleError(error) {
 function start() {
     getInput()
         .then(loop)
-        .then(getOutput)
         .catch(handleError);
 }
 
