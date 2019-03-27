@@ -10,7 +10,7 @@ Canvas course copy (internal or external) does not copy a parent course's **Grou
 -----
 
 ## Definition of Done
-This tool will copy groups from a parent (source), create them in a child (target), and log a report stating successes/failures.
+This tool will copy groups from a parent (source), create them in a child (target), and create a report stating successes/failures/etc.
 
 -----
 
@@ -21,13 +21,10 @@ This tool will copy groups from a parent (source), create them in a child (targe
 ### Input Requirements
 
 #### Source of Inputs
-Inputs will be given based on need, will be given to a wrapper for this project, or be given via CSV. They will be input via CLI at runtime.
+Inputs are based on need and will be input via prompt or via CSV. They will be entered on CLI at runtime.
 
 #### Definition of Inputs
-- **Source Course ID**: <_Canvas Course ID Number_>
-- **Target Course ID**: <_Canvas Course ID Number_>
-- **Delete default "Project Groups" category?**: <_yes or no_>
-- **Log report to console?**: <_yes or no_>
+Read more about definition of inputs [here](https://github.com/byuitechops/canvas-copy-groups/blob/master/README.md).
 
 ---
 
@@ -38,7 +35,8 @@ Output directly implemented into Canvas Target Course's Groups Section. Reports 
 #### Definition of Outputs
 
 - Adds/removes groups within *target* course's group sets directly in Canvas.
-- **Console Report**: ```json
+- **Console Report**:
+```json
 {
     data: [
         {
