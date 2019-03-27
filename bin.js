@@ -6,11 +6,11 @@ async function getInput() {
         {
             type: 'input',
             name: 'sourceCourseID',
-            message: 'Source Course ID (copying from):'
+            message: 'Source Course ID (copying from)'
         }, {
             type: 'input',
             name: 'targetCourseID',
-            message: 'Target Course ID (copying to):'
+            message: 'Target Course ID (copying to)'
         }, {
             type: 'toggle',
             name: 'deleteProjectGroups',
@@ -18,7 +18,8 @@ async function getInput() {
             choices: [
                 { name: 'yes', message: 'y', value: true, hint: '(default)' },
                 { name: 'no', message: 'n', value: false },
-            ]
+            ],
+            autofocus: 0
         }, {
             type: 'toggle',
             name: 'logReport',

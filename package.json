@@ -31,6 +31,7 @@
     "async": "^2.6.2",
     "canvas-api-wrapper": "^3.3.5",
     "canvas-wrapper": "github:byuitechops/canvas-wrapper",
+    "d3-dsv": "^1.1.1",
     "enquirer": "^2.3.0",
     "logger": "github:byuitechops/logger"
   },
