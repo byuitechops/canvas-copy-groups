@@ -1,6 +1,7 @@
-const main = require('./main.js');
+const main = require('../main.js');
 const { prompt } = require('enquirer');
 
+// Ask user for inputs w/ Enquirer
 async function getInput() {
     const question = [
         {
@@ -35,6 +36,7 @@ async function getInput() {
     return answers;
 }
 
+// if enabled at getInput(), log report object to console
 function getOutput(report) {
     if (report.enabled) {
         console.log('\nREPORT:');
@@ -49,6 +51,7 @@ function handleError(error) {
     return;
 }
 
+// start promise chain
 function start() {
     getInput()
         .then(main)

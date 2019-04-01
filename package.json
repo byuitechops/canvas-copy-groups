@@ -37,10 +37,10 @@
   },
   "description": "Copies groups from one course to another.",
   "license": "MIT",
-  "main": "bin.js",
+  "main": "bin/bin.js",
   "name": "canvas-copy-groups",
   "scripts": {
-    "start": "node bin.js",
+    "start": "node bin/bin.js",
     "wrap": "node ./bin/wrapper.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

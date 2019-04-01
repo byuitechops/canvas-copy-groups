@@ -3,6 +3,7 @@ const { prompt } = require('enquirer');
 const d3 = require('d3-dsv');
 const fs = require('fs');
 
+// Ask user for inputs w/ Enquirer
 async function getInput() {
     const questions = [
         {
@@ -34,6 +35,7 @@ async function getInput() {
     return answers;
 }
 
+// if enabled at getInput(), log report object to console
 function getOutput(report) {
     if (report.enabled) {
         console.log('\nREPORT:');
@@ -43,6 +45,7 @@ function getOutput(report) {
     }
 }
 
+// loop through all course pairs in CSV and return promise chain
 function loop(answers) {
     var courseList = '';
     try {
@@ -51,6 +54,7 @@ function loop(answers) {
         throw `ERROR: Path \'${answer.path}\' could not be read.`;
     }
     return Promise.all(courseList.map(coursePair => {
+        // return main() promise chain sending in INPUT object
         return main({
             sourceCourseID: coursePair.source,
             targetCourseID: coursePair.target,
@@ -65,6 +69,7 @@ function handleError(error) {
     return;
 }
 
+// start promise chain
 function start() {
     getInput()
         .then(loop)
