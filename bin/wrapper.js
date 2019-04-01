@@ -4,20 +4,34 @@ const d3 = require('d3-dsv');
 const fs = require('fs');
 
 async function getInput() {
-    const question = {
-        type: 'input',
-        name: 'path',
-        message: 'File path to CSV list location',
-        initial: './test.csv'
-    };
-    var answer = await prompt(question);
+    const questions = [
+        {
+            type: 'input',
+            name: 'path',
+            message: 'File path to CSV list location',
+            initial: './test.csv'
+        }, {
+            type: 'toggle',
+            name: 'deleteProjectGroups',
+            message: 'Delete the default "Project Groups" category?',
+            choices: [
+                { name: 'yes', message: 'y', value: true, hint: '(default)' },
+                { name: 'no', message: 'n', value: false },
+            ],
+            autofocus: 0
+        }, {
+            type: 'toggle',
+            name: 'logReport',
+            message: 'Log report to console?',
+            choices: [
+                { name: 'yes', message: 'y', value: true },
+                { name: 'no', message: 'n', value: false },
+            ]
+        }
+    ];
+    var answers = await prompt(questions);
 
-    try {
-        const courseList = d3.csvParse(fs.readFileSync(answer.path, 'utf-8'));
-        return courseList;
-    } catch (err) {
-        throw `ERROR: Path \'${answer.path}\' could not be read.`;
-    }
+    return answers;
 }
 
 function getOutput(report) {
@@ -29,13 +43,19 @@ function getOutput(report) {
     }
 }
 
-function loop(courseList) {
+function loop(answers) {
+    var courseList = '';
+    try {
+        courseList = d3.csvParse(fs.readFileSync(answers.path, 'utf-8'));
+    } catch (err) {
+        throw `ERROR: Path \'${answer.path}\' could not be read.`;
+    }
     return Promise.all(courseList.map(coursePair => {
         return main({
             sourceCourseID: coursePair.source,
             targetCourseID: coursePair.target,
-            deleteProjectGroups: true,
-            logReport: false
+            deleteProjectGroups: answers.deleteProjectGroups,
+            logReport: answers.logReport
         }).then(getOutput);
     }));
 }

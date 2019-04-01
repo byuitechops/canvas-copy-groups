@@ -30,20 +30,22 @@ Read more about definition of inputs [here](https://github.com/byuitechops/canva
 
 ### Output Requirements
 #### Destination
-Output directly implemented into Canvas Target Course's Groups Section. Reports will be printed to the console if specified to at runtime.
+Output directly implemented into Canvas Target Course's Groups Section. Reports will be printed to the console if specified so at runtime.
 
 #### Definition of Outputs
 
 - Adds/removes groups within *target* course's group sets directly in Canvas.
-- **Console Report**:
+- **Console Report**: 
 ```json
 {
     data: [
         {
+            courseID: '12345',
             message: 'Group Categories Created',
             Name: 'Final Project',
-            courseId: '12345'
+            ID: '44444'
         }, {
+            courseID: '12345',
             message: 'Groups Created',
             Name: 'Final Project Group 1',
             ID: 100000,
