@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const main = require('../main.js');
 const { prompt } = require('enquirer');
 const d3 = require('d3-dsv');
@@ -39,7 +41,7 @@ async function getInput() {
 }
 
 // if enabled at getInput(), log report object to console
-function printOutput(reports,answers) {
+function printOutput(reports, answers) {
     // record the number of errors to make it easy to find
     reports = reports.map(report => {
         report.errorCount = report.errors.length;
@@ -57,9 +59,9 @@ function printOutput(reports,answers) {
     }
 
     // write the file out
-    var fileName = path.parse(answers.path).name 
+    var fileName = path.parse(answers.path).name
     fileName = `${fileName}Report_${Date.now()}.json`
-    fs.writeFileSync(fileName,pretty(reports),'utf8');
+    fs.writeFileSync(fileName, pretty(reports), 'utf8');
     console.log(`Wrote: ${fileName}`)
 }
 

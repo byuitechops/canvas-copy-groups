@@ -46,6 +46,10 @@
     "wrap": "node ./bin/wrapper.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "bin": {
+    "copyGroups": "./bin/bin.js",
+    "wrapCopyGroups": "./bin/wrapper.js"
+  },
   "version": "1.0.0",
   "devDependencies": {},
   "repository": {
