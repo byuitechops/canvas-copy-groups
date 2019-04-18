@@ -17,24 +17,31 @@ module.exports = (input, i) => {
     let report = { source: source, target: target, enabled: input.logReport, data: [], errors: [] };
     return retrieveGroupData(source, report)
         .then(groupData => {
+            // console.log(`Deleting existing matches in ${target}`);
             return deleteExistingMatches(source, target, groupData, report);
         })
         .then(groupData => {
+            // console.log(`Creating categories in ${target}`);
             return createCategories(source, target, groupData, report);
         })
         .then(groupData => {
+            // console.log(`Creating groups in ${target}`);
             return createGroups(source, target, groupData, report);
         })
         .then(groupData => {
+            // console.log(`Associating assignments in ${target}`);
             return associateAssignments(source, target, groupData, report);
         })
         .then(groupData => {
+            // console.log(`Associating discussions in ${target}`);
             return associateDiscussions(source, target, groupData, report);
         })
         .then(groupData => {
             if (input.deleteProjectGroups === true) {
+                // console.log(`Deleting default "Project Groups" category for ${target}`);
                 return deleteProjectGroups(source, target, groupData, report);
             }
+            // console.log(`Completed copying to ${target}`);
             return {
                 groupData,
                 report

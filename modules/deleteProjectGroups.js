@@ -6,6 +6,7 @@ module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
             if (err) return reject(err);
 
             var projectGroups = categories.find(c => c.name === 'Project Groups');
+            console.log(projectGroups);
 
             if (projectGroups !== undefined) {
                 canvas.delete(`/api/v1/group_categories/${projectGroups.id}`, (err) => {
