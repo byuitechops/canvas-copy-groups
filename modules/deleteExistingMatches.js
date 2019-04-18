@@ -18,15 +18,21 @@ module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
             return acc;
         }, []);
 
-        // delete the ones that match from the targetCourse
-        for (let i = 0; i < categoriesToDelete.length; i++) {
-            await canvas.delete(`/api/v1/group_categories/${categoriesToDelete[i].id}`);
-            report.data.push({
-                courseID: targetCourseID,
-                message: 'Deleted Category from course',
-                categoryId: categoriesToDelete[i].id,
-                categoryName: categoriesToDelete[i].name
-            });
+        try {
+            
+            // delete the ones that match from the targetCourse
+            for (let i = 0; i < categoriesToDelete.length; i++) {
+                await canvas.delete(`/api/v1/group_categories/${categoriesToDelete[i].id}`);
+                report.data.push({
+                    courseID: targetCourseID,
+                    message: 'Deleted Category from course',
+                    categoryId: categoriesToDelete[i].id,
+                    categoryName: categoriesToDelete[i].name
+                });
+            }
+        } catch (error) {
+            console.log('you got me')    
+            //TODO: what happens when this throws
         }
         return groupData;
     }

@@ -33,7 +33,9 @@
     "canvas-wrapper": "github:byuitechops/canvas-wrapper",
     "d3-dsv": "^1.1.1",
     "enquirer": "^2.3.0",
-    "logger": "github:byuitechops/logger"
+    "json-stringify-pretty-compact": "^2.0.0",
+    "logger": "github:byuitechops/logger",
+    "p-map": "^2.1.0"
   },
   "description": "Copies groups from one course to another.",
   "license": "MIT",

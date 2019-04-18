@@ -33,7 +33,7 @@ module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
         return new Promise((resolve, reject) => {
             canvas.get(`/api/v1/courses/${targetCourseID}/discussion_topics?search_term=${discussion.title}`, (err, discussions) => {
                 if (err) return reject(err);
-                if (discussions[0].title === discussion.title) {
+                if (discussions[0] && discussions[0].title === discussion.title) {
                     discussion.targetDiscussion = discussions[0];
                     resolve(discussion);
                 } else {

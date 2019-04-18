@@ -47,16 +47,24 @@ module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
             }
         });
     }
-
+    
     return new Promise((resolve, reject) => {
         asyncLib.eachOf(groupData, makeCategories, (err) => {
             if (err) return reject(err);
+            
+            if (groupData.length === 0) {
+                report.errors.push({ 'NO_GROUPS': `Source course contains no groups.` });
+                // reject(new Error('Source course contains no groups.'));
+            }
+            
             groupData = groupData.filter(category => {
                 return !category.existing;
             });
-            if (groupData.length === 0) {
-                reject(new Error('Source course either contains no groups, or the target course already has all of them.'));
-            }
+            
+            // if (groupData.length === 0) {
+            //     report.errors.push({ 'HAS_ALL_GROUPS': 'The target course already has all of them.' });
+            //     // reject(new Error('The target course already has all of them.'));
+            // }
             resolve(groupData);
         });
     });

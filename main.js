@@ -6,10 +6,15 @@ const associateAssignments = require('./modules/associateAssignments.js');
 const associateDiscussions = require('./modules/associateDiscussions.js');
 const deleteProjectGroups = require('./modules/deleteProjectGroups.js');
 
-module.exports = (input) => {
+module.exports = (input, i) => {
     const source = input.sourceCourseID,
         target = input.targetCourseID;
-    let report = { enabled: input.logReport, data: [], errors: [] };
+    if (i === undefined) {
+        i = '';
+    }
+    console.log(i, source, '->', target);
+
+    let report = { source: source, target: target, enabled: input.logReport, data: [], errors: [] };
     return retrieveGroupData(source, report)
         .then(groupData => {
             return deleteExistingMatches(source, target, groupData, report);

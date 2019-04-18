@@ -2,6 +2,9 @@ const main = require('../main.js');
 const { prompt } = require('enquirer');
 const d3 = require('d3-dsv');
 const fs = require('fs');
+const path = require('path');
+const pMap = require('p-map');
+const pretty = require('json-stringify-pretty-compact');
 
 // Ask user for inputs w/ Enquirer
 async function getInput() {
@@ -36,13 +39,28 @@ async function getInput() {
 }
 
 // if enabled at getInput(), log report object to console
-function getOutput(report) {
-    if (report.enabled) {
-        console.log('\nREPORT:');
-        console.log(report.data);
-        console.log('ERRORS:');
-        console.log(report.errors);
+function printOutput(reports,answers) {
+    // record the number of errors to make it easy to find
+    reports = reports.map(report => {
+        report.errorCount = report.errors.length;
+        return report
+    })
+
+    // print you want
+    if (reports[0].enabled) {
+        reports.forEach(report => {
+            console.log('\nREPORT:');
+            console.log(report.data);
+            console.log('ERRORS:');
+            console.log(report.errors);
+        });
     }
+
+    // write the file out
+    var fileName = path.parse(answers.path).name 
+    fileName = `${fileName}Report_${Date.now()}.json`
+    fs.writeFileSync(fileName,pretty(reports),'utf8');
+    console.log(`Wrote: ${fileName}`)
 }
 
 // loop through all course pairs in CSV and return promise chain
@@ -53,15 +71,17 @@ function loop(answers) {
     } catch (err) {
         throw `ERROR: Path \'${answer.path}\' could not be read.`;
     }
-    return Promise.all(courseList.map(coursePair => {
-        // return main() promise chain sending in INPUT object
-        return main({
-            sourceCourseID: coursePair.source,
-            targetCourseID: coursePair.target,
-            deleteProjectGroups: answers.deleteProjectGroups,
-            logReport: answers.logReport
-        }).then(getOutput);
-    }));
+    // make It Fit main
+    courseList = courseList.map(coursePair => ({
+        sourceCourseID: coursePair.source,
+        targetCourseID: coursePair.target,
+        deleteProjectGroups: answers.deleteProjectGroups,
+        logReport: answers.logReport
+    }))
+    // .slice(9,10);
+
+    // send back after main
+    return pMap(courseList, main, { concurrency: 1 });
 }
 
 function handleError(error) {
@@ -70,10 +90,14 @@ function handleError(error) {
 }
 
 // start promise chain
-function start() {
-    getInput()
-        .then(loop)
-        .catch(handleError);
+async function start() {
+    try {
+        var answers = await getInput();
+        var reports = await loop(answers);
+        printOutput(reports, answers);
+    } catch (error) {
+        handleError(error);
+    }
 }
 
 start();

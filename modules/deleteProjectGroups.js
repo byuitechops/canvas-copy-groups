@@ -9,7 +9,12 @@ module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
 
             if (projectGroups !== undefined) {
                 canvas.delete(`/api/v1/group_categories/${projectGroups.id}`, (err) => {
-                    if (err) return reject(err);
+                    if (err) {
+                        // TODO: this never called
+                        console.log(" source: " + sourceCourseID + "| target: " + targetCourseID);
+                        err.message += " source: " + sourceCourseID + "| target: " + targetCourseID
+                        return reject(err);
+                    }
                     report.data.push({ message: `Default \"Project Groups\" Group Category has been removed from course ${targetCourseID}.` });
                     resolve({
                         groupData

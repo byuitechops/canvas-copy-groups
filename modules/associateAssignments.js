@@ -32,7 +32,7 @@ module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
         return new Promise((resolve, reject) => {
             canvas.get(`/api/v1/courses/${targetCourseID}/assignments?search_term=${assignment.name}`, (err, assignments) => {
                 if (err) return reject(err);
-                if (assignments[0].name === assignment.name) {
+                if (assignments[0] && assignments[0].name === assignment.name) {
                     assignment.targetAssignment = assignments[0];
                     resolve(assignment);
                 } else {
