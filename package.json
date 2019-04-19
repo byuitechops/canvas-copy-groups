@@ -33,7 +33,6 @@
     "canvas-wrapper": "github:byuitechops/canvas-wrapper",
     "chalk": "^2.4.2",
     "d3-dsv": "^1.1.1",
-    "enquirer": "^2.3.0",
     "inquirer": "^6.3.1",
     "json-stringify-pretty-compact": "^2.0.0",
     "logger": "github:byuitechops/logger",
