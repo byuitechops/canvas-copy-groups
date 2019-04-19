@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const main = require('../main.js');
-const { prompt } = require('enquirer');
+const { prompt } = require('inquirer');
 const d3 = require('d3-dsv');
 const fs = require('fs');
 const path = require('path');
@@ -15,28 +15,22 @@ async function getInput() {
             type: 'input',
             name: 'path',
             message: 'File path to CSV list location',
-            initial: './test.csv'
+            suffix: ':',
+            default: './test.csv',
+            validate: input => { return fs.existsSync(path.resolve(input)) ? true : false; }
         }, {
-            type: 'toggle',
+            type: 'confirm',
             name: 'deleteProjectGroups',
             message: 'Delete the default "Project Groups" category?',
-            choices: [
-                { name: 'yes', message: 'y', value: true, hint: '(default)' },
-                { name: 'no', message: 'n', value: false },
-            ],
-            autofocus: 0
+            default: true
         }, {
-            type: 'toggle',
+            type: 'confirm',
             name: 'logReport',
             message: 'Log report to console?',
-            choices: [
-                { name: 'yes', message: 'y', value: true },
-                { name: 'no', message: 'n', value: false },
-            ]
+            default: true
         }
     ];
     var answers = await prompt(questions);
-
     return answers;
 }
 
@@ -50,12 +44,7 @@ function printOutput(reports, answers) {
 
     // print you want
     if (reports[0].enabled) {
-        reports.forEach(report => {
-            console.log('\nREPORT:');
-            console.log(report.data);
-            console.log('ERRORS:');
-            console.log(report.errors);
-        });
+        console.log('COMPLETE');
     }
 
     // write the file out

@@ -1,6 +1,6 @@
 const canvas = require('canvas-wrapper');
 const asyncLib = require('async');
-
+const logReport = require('./logReport.js');
 
 module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
     /* Retrieves all assignments from source course and then filters to just group assignments */
@@ -36,8 +36,14 @@ module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
                     assignment.targetAssignment = assignments[0];
                     resolve(assignment);
                 } else {
-                    report.errors.push({ ASSIGNMENT: `Unable to locate ${assignment.name} in the course ${targetCourseID}.` });
-                    reject(null);
+                    var reportError = {
+                        courseID: targetCourseID,
+                        message: `Unable to locate ${assignment.name} in the course`
+                    };
+                    if (report.enabled) logReport(reportError, 'error');
+                    report.errors.push(reportError);
+                    report.errorCount++;
+                    reject(`Unable to locate ${assignment.name} in the course ${targetCourseID}.`);
                 }
             });
         });
@@ -67,14 +73,16 @@ module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
             // Associate the Target Course assignment with its group
             canvas.put(`/api/v1/courses/${targetCourseID}/assignments/${assignment.targetAssignment.id}`, putObj, (err, updatedAssignment) => {
                 if (err) return reject(err);
-                report.data.push({
+                var reportData = {
                     courseID: targetCourseID,
-                    message: 'Assignments Associated',
+                    message: `Assignment ${updatedAssignment.name} associated`,
                     'Name': updatedAssignment.name,
                     'ID': updatedAssignment.id,
                     'Group Category': assignment.newCategory.name,
                     'Overrides Set': assignment.has_overrides
-                });
+                };
+                if (report.enabled) logReport(reportData, 'data');
+                report.data.push(reportData);
                 resolve(assignment);
             });
         });
@@ -109,13 +117,15 @@ module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
                             callback(err);
                             return;
                         }
-                        report.data.push({
+                        var reportData = {
                             courseID: targetCourseID,
-                            message: 'Assignment Overrides Updated',
+                            message: `Assignment ${assignment.name} overrides updated`,
                             'Name': assignment.name,
                             'ID': updatedAssignment.id,
                             'Group Category': assignment.newCategory.name,
-                        });
+                        };
+                        if (report.enabled) logReport(reportData, 'data');
+                        report.data.push(reportData);
                         callback(null);
                     });
 

@@ -1,39 +1,35 @@
 #!/usr/bin/env node
 
 const main = require('../main.js');
-const { prompt } = require('enquirer');
+const { prompt } = require('inquirer');
 
 // Ask user for inputs w/ Enquirer
 async function getInput() {
     const question = [
         {
-            type: 'input',
+            type: 'number',
             name: 'sourceCourseID',
-            message: 'Source Course ID (copying from)'
+            message: 'Source Course ID (copying from)',
+            suffix: ':',
+            default: '46990'
         }, {
-            type: 'input',
+            type: 'number',
             name: 'targetCourseID',
-            message: 'Target Course ID (copying to)'
+            message: 'Target Course ID (copying to)',
+            suffix: ':',
+            default: '46992'
         }, {
-            type: 'toggle',
+            type: 'confirm',
             name: 'deleteProjectGroups',
             message: 'Delete the default "Project Groups" category?',
-            choices: [
-                { name: 'yes', message: 'y', value: true, hint: '(default)' },
-                { name: 'no', message: 'n', value: false },
-            ],
-            autofocus: 0
+            default: true
         }, {
-            type: 'toggle',
+            type: 'confirm',
             name: 'logReport',
             message: 'Log report to console?',
-            choices: [
-                { name: 'yes', message: 'y', value: true },
-                { name: 'no', message: 'n', value: false },
-            ]
+            default: true
         }
     ];
-
     var answers = await prompt(question);
     return answers;
 }
@@ -41,10 +37,7 @@ async function getInput() {
 // if enabled at getInput(), log report object to console
 function getOutput(report) {
     if (report.enabled) {
-        console.log('\nREPORT:');
-        console.log(report.data);
-        console.log('ERRORS:');
-        console.log(report.errors);
+        console.log("COMPLETE");
     }
 }
 

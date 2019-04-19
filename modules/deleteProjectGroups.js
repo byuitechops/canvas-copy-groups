@@ -1,4 +1,5 @@
 const canvas = require('canvas-wrapper');
+const logReport = require('./logReport.js');
 
 module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
     return new Promise((resolve, reject) => {
@@ -6,23 +7,42 @@ module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
             if (err) return reject(err);
 
             var projectGroups = categories.find(c => c.name === 'Project Groups');
-            console.log(projectGroups);
 
             if (projectGroups !== undefined) {
                 canvas.delete(`/api/v1/group_categories/${projectGroups.id}`, (err) => {
                     if (err) {
                         // TODO: this never called
-                        console.log(" source: " + sourceCourseID + "| target: " + targetCourseID);
-                        err.message += " source: " + sourceCourseID + "| target: " + targetCourseID
+                        var reportError = {
+                            courseID: targetCourseID,
+                            message: 'Error deleting "Project Groups" default category from course',
+                            Group: "Project Groups",
+                            ID: projectGroups.id
+                        };
+                        if (report.enabled) logReport(reportError, 'error');
+                        report.errors.push(reportError);
+                        report.errorCount++;
+                        err.message += " source: " + sourceCourseID + "| target: " + targetCourseID;
                         return reject(err);
                     }
-                    report.data.push({ message: `Default \"Project Groups\" Group Category has been removed from course ${targetCourseID}.` });
+                    var reportData = {
+                        courseID: targetCourseID,
+                        message: '"Project Groups" default category has been removed from course',
+                        Group: "Project Groups",
+                        ID: projectGroups.id
+                    };
+                    if (report.enabled) logReport(reportData, 'data');
+                    report.data.push(reportData);
                     resolve({
                         groupData
                     });
                 });
             } else {
-                report.data.push({ message: `\"Project Groups\" default category was not found in course ${targetCourseID}.` });
+                var reportWarning = {
+                    courseID: targetCourseID,
+                    message: '"Project Groups" default category was not found in course'
+                };
+                if (report.enabled) logReport(reportWarning, 'warning');
+                report.data.push(reportWarning);
                 resolve({
                     groupData
                 });
