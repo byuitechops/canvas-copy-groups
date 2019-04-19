@@ -38,24 +38,24 @@ Output directly implemented into Canvas Target Course's Groups Section. Reports 
 - **Console Report**: 
 ```json
 {
-    data: [
+    "data": [
         {
-            courseID: '12345',
-            message: 'Group Categories Created',
-            Name: 'Final Project',
-            ID: '44444'
+            "courseID": "12345",
+            "message": "Group Categories Created",
+            "Name": "Final Project",
+            "ID": "44444"
         }, {
-            courseID: '12345',
-            message: 'Groups Created',
-            Name: 'Final Project Group 1',
-            ID: 100000,
-            Category: 'Final Project'
+            "courseID": "12345",
+            "message": "Groups Created",
+            "Name": "Final Project Group 1",
+            "ID": 100000,
+            "Category": "Final Project"
         }
     ],
-    errors: [
-        { ASSIGNMENT: 'Unable to locate ASSIGNMENT in the Target Course.' }
+    "errors": [
+        { "ASSIGNMENT": "Unable to locate ASSIGNMENT in the Target Course." }
     ],
-    enabled: true || false
+    "enabled": true || false
 }
 ```
 
@@ -64,7 +64,7 @@ Output directly implemented into Canvas Target Course's Groups Section. Reports 
 ### User Interface
 
 #### Type:
-CLI with Enquirer Prompt.
+CLI with Inquirer Prompt.
 
 -----
 
