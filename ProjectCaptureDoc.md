@@ -10,7 +10,7 @@ Canvas course copy (internal or external) does not copy a parent course's **Grou
 -----
 
 ## Definition of Done
-This tool will copy groups from a parent (source), create them in a child (target), and log a report stating successes/failures.
+This tool will copy groups from a parent (source), create them in a child (target), and create a report stating successes/failures/etc.
 
 -----
 
@@ -21,31 +21,50 @@ This tool will copy groups from a parent (source), create them in a child (targe
 ### Input Requirements
 
 #### Source of Inputs
-Inputs will be given based on need, will be given to a wrapper for this project, or be given via CSV. They will be input via CLI at runtime.
+Inputs are based on need and will be input via prompt or via CSV. They will be entered on CLI at runtime.
 
 #### Definition of Inputs
-- **Source Course ID**: <_Canvas Course ID Number_>
-- **Target Course ID**: <_Canvas Course ID Number_>
-- **Delete default "Project Groups" category?**: <_y(es) or n(o)_>
+Read more about definition of inputs [here](https://github.com/byuitechops/canvas-copy-groups/blob/master/README.md).
 
 ---
 
 ### Output Requirements
 #### Destination
-Output directly implemented into Canvas Target Course's Groups Section. Reports will be printed to folders **./htmlReport** and **./jsonReport**.
+Output directly implemented into Canvas Target Course's Groups Section. Reports will be printed to the console if specified so at runtime.
 
 #### Definition of Outputs
 
-- **./htmlReport/Group Copy.html**: HTML report
-- **./jsonReport/Group Copy.json**: JSON report
-- Adds/removes groups within *target* course's group sets.
+- Adds/removes groups within *target* course's group sets directly in Canvas.
+- **Console Report**: 
+```json
+{
+    "data": [
+        {
+            "courseID": "12345",
+            "message": "Group Categories Created",
+            "Name": "Final Project",
+            "ID": "44444"
+        }, {
+            "courseID": "12345",
+            "message": "Groups Created",
+            "Name": "Final Project Group 1",
+            "ID": 100000,
+            "Category": "Final Project"
+        }
+    ],
+    "errors": [
+        { "ASSIGNMENT": "Unable to locate ASSIGNMENT in the Target Course." }
+    ],
+    "enabled": true || false
+}
+```
 
 ---
 
 ### User Interface
 
 #### Type:
-CLI with Enquirer Prompt.
+CLI with Inquirer Prompt.
 
 -----
 

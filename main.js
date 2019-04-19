@@ -5,38 +5,43 @@ const createGroups = require('./modules/createGroups.js');
 const associateAssignments = require('./modules/associateAssignments.js');
 const associateDiscussions = require('./modules/associateDiscussions.js');
 const deleteProjectGroups = require('./modules/deleteProjectGroups.js');
-const Logger = require('logger');
-const logger = new Logger('Group Copy');
 
-module.exports = (sourceCourseID, targetCourseID, deleteDefaultCategory) => {
-    retrieveGroupData(sourceCourseID, logger)
+module.exports = (input, i) => {
+    const source = input.sourceCourseID,
+        target = input.targetCourseID;
+    if (i === undefined) {
+        i = '';
+    }
+    console.log(i, source, '->', target);
+
+    let report = { source: source, target: target, enabled: input.logReport, data: [], errors: [] };
+    return retrieveGroupData(source, report)
         .then(groupData => {
-            return deleteExistingMatches(sourceCourseID, targetCourseID, groupData, logger);
+            return deleteExistingMatches(source, target, groupData, report);
         })
         .then(groupData => {
-            return createCategories(sourceCourseID, targetCourseID, groupData, logger);
+            return createCategories(source, target, groupData, report);
         })
         .then(groupData => {
-            return createGroups(sourceCourseID, targetCourseID, groupData, logger);
+            return createGroups(source, target, groupData, report);
         })
         .then(groupData => {
-            return associateAssignments(sourceCourseID, targetCourseID, groupData, logger);
+            return associateAssignments(source, target, groupData, report);
         })
         .then(groupData => {
-            return associateDiscussions(sourceCourseID, targetCourseID, groupData, logger);
+            return associateDiscussions(source, target, groupData, report);
         })
         .then(groupData => {
-            if (deleteDefaultCategory === true) {
-                return deleteProjectGroups(sourceCourseID, targetCourseID, groupData, logger);
+            if (input.deleteProjectGroups === true) {
+                return deleteProjectGroups(source, target, groupData, report);
             }
             return {
                 groupData,
-                logger
+                report
             };
         })
         .catch((e) => console.error(e))
-        .finally(() => {
-            logger.htmlReport('./htmlReport');
-            logger.jsonReport('./jsonReport');
+        .then(() => {
+            return report;
         });
 };

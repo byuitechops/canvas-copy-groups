@@ -1,9 +1,8 @@
 const canvas = require('canvas-wrapper');
 const asyncLib = require('async');
+const logReport = require('./logReport.js');
 
-
-module.exports = (sourceCourseID, targetCourseID, groupData, logger) => {
-
+module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
     /* Retrieves all assignments from source course and then filters to just group assignments */
     function getSourceAssignments() {
         return new Promise((resolve, reject) => {
@@ -33,12 +32,18 @@ module.exports = (sourceCourseID, targetCourseID, groupData, logger) => {
         return new Promise((resolve, reject) => {
             canvas.get(`/api/v1/courses/${targetCourseID}/assignments?search_term=${assignment.name}`, (err, assignments) => {
                 if (err) return reject(err);
-                if (assignments[0].name === assignment.name) {
+                if (assignments[0] && assignments[0].name === assignment.name) {
                     assignment.targetAssignment = assignments[0];
                     resolve(assignment);
                 } else {
-                    logger.warning(`ASSIGNMENT: Unable to locate ${assignment.name} in the Target Course.`);
-                    reject(null);
+                    var reportError = {
+                        courseID: targetCourseID,
+                        message: `Unable to locate ${assignment.name} in the course`
+                    };
+                    if (report.enabled) logReport(reportError, 'error');
+                    report.errors.push(reportError);
+                    report.errorCount++;
+                    reject(`Unable to locate ${assignment.name} in the course ${targetCourseID}.`);
                 }
             });
         });
@@ -68,12 +73,16 @@ module.exports = (sourceCourseID, targetCourseID, groupData, logger) => {
             // Associate the Target Course assignment with its group
             canvas.put(`/api/v1/courses/${targetCourseID}/assignments/${assignment.targetAssignment.id}`, putObj, (err, updatedAssignment) => {
                 if (err) return reject(err);
-                logger.log('Assignments Associated', {
+                var reportData = {
+                    courseID: targetCourseID,
+                    message: `Assignment ${updatedAssignment.name} associated`,
                     'Name': updatedAssignment.name,
                     'ID': updatedAssignment.id,
                     'Group Category': assignment.newCategory.name,
                     'Overrides Set': assignment.has_overrides
-                });
+                };
+                if (report.enabled) logReport(reportData, 'data');
+                report.data.push(reportData);
                 resolve(assignment);
             });
         });
@@ -108,11 +117,15 @@ module.exports = (sourceCourseID, targetCourseID, groupData, logger) => {
                             callback(err);
                             return;
                         }
-                        logger.log('Assignment Overrides Updated', {
+                        var reportData = {
+                            courseID: targetCourseID,
+                            message: `Assignment ${assignment.name} overrides updated`,
                             'Name': assignment.name,
                             'ID': updatedAssignment.id,
                             'Group Category': assignment.newCategory.name,
-                        });
+                        };
+                        if (report.enabled) logReport(reportData, 'data');
+                        report.data.push(reportData);
                         callback(null);
                     });
 

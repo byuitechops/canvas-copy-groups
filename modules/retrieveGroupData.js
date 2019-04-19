@@ -35,7 +35,7 @@ module.exports = async (sourceCourseID) => {
         var groupData = await getGroups(sourceCourseID, categories);
         return groupData;
     } catch (e) {
-        console.log(e);
+        throw e.message;
     }
 
 };

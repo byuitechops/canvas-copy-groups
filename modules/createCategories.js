@@ -1,7 +1,8 @@
 const canvas = require('canvas-wrapper');
 const asyncLib = require('async');
+const logReport = require('./logReport.js');
 
-module.exports = (sourceCourseID, targetCourseID, groupData, logger) => {
+module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
 
     function getExistingCategory(category) {
         return new Promise((resolve, reject) => {
@@ -27,7 +28,15 @@ module.exports = (sourceCourseID, targetCourseID, groupData, logger) => {
             if (err) {
                 // If it is already being used, remove the category from the category array
                 if (err.message.includes('already in use')) {
-                    logger.warning(`CATEGORY EXISTS: ${category.name} is already in the course.`);
+                    var reportError = {
+                        courseID: targetCourseID,
+                        message: `${category.name} is already in course`,
+                        categoryId: newCategory.id,
+                        categoryName: category.name
+                    };
+                    if (report.enabled) logReport(reportError, 'error');
+                    report.errors.push(reportError);
+                    report.errorCount++;
                     // getExistingCategory(newCategory);
                     category.existing = true;
                     callback(null);
@@ -37,10 +46,14 @@ module.exports = (sourceCourseID, targetCourseID, groupData, logger) => {
             } else {
                 category.newCategory = newCategory;
                 category.existing = false;
-                logger.log('Group Categories Created', {
-                    'Name': newCategory.name,
-                    'ID': newCategory.id,
-                });
+                var reportData = {
+                    courseID: targetCourseID,
+                    message: `Group category ${newCategory.name} created`,
+                    Name: newCategory.name,
+                    ID: newCategory.id,
+                };
+                if (report.enabled) logReport(reportData, 'data');
+                report.data.push(reportData);
                 callback(null);
             }
         });
@@ -49,12 +62,32 @@ module.exports = (sourceCourseID, targetCourseID, groupData, logger) => {
     return new Promise((resolve, reject) => {
         asyncLib.eachOf(groupData, makeCategories, (err) => {
             if (err) return reject(err);
+
+            if (groupData.length === 0) {
+                var reportError = {
+                    courseID: sourceCourseID,
+                    message: 'Source course contains no groups.'
+                };
+                if (report.enabled) logReport(reportError, 'error');
+                report.errors.push(reportError);
+                report.errorCount++;
+                reject(new Error(`Source course ${sourceCourseID} contains no groups.`));
+            }
+
             groupData = groupData.filter(category => {
                 return !category.existing;
             });
-            if (groupData.length === 0) {
-                reject(new Error('Source course either contains no groups, or the target course already has all of them.'));
-            }
+
+            // if (groupData.length === 0) {
+            //     var reportError = {
+            //         courseID: targetCourseID,
+            //         message: 'The target course already has all categories'
+            //     };
+            //     if (report.enabled) logReport(reportError, 'error');
+            //     report.errors.push(reportError);
+            //     report.errorCount++;
+            //     // reject(new Error('The target course already has all of them.'));
+            // }
             resolve(groupData);
         });
     });

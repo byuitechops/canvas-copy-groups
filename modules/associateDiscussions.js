@@ -1,8 +1,8 @@
 const canvas = require('canvas-wrapper');
 const asyncLib = require('async');
+const logReport = require('./logReport.js');
 
-
-module.exports = (sourceCourseID, targetCourseID, groupData, logger) => {
+module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
 
     /* Retrieves all discussions from source course and then filters to just group discussions */
     function getSourceDiscussions() {
@@ -33,12 +33,18 @@ module.exports = (sourceCourseID, targetCourseID, groupData, logger) => {
         return new Promise((resolve, reject) => {
             canvas.get(`/api/v1/courses/${targetCourseID}/discussion_topics?search_term=${discussion.title}`, (err, discussions) => {
                 if (err) return reject(err);
-                if (discussions[0].title === discussion.title) {
+                if (discussions[0] && discussions[0].title === discussion.title) {
                     discussion.targetDiscussion = discussions[0];
                     resolve(discussion);
                 } else {
-                    logger.warning(`DISCUSSION: Unable to locate ${discussion.title} in the Target Course.`);
-                    reject(null);
+                    var reportError = {
+                        courseID: targetCourseID,
+                        message: `Unable to locate ${discussion.title} in the course`
+                    };
+                    if (report.enabled) logReport(reportError, 'error');
+                    report.errors.push(reportError);
+                    report.errorCount++;
+                    reject(new Error(`Unable to locate ${discussion.title} in the course ${targetCourseID}.`));
                 }
             });
         });
@@ -54,11 +60,15 @@ module.exports = (sourceCourseID, targetCourseID, groupData, logger) => {
             // Associate the Target Course discussion with its group
             canvas.put(`/api/v1/courses/${targetCourseID}/discussion_topics/${discussion.targetDiscussion.id}`, putObj, (err, updatedDiscussion) => {
                 if (err) return reject(err);
-                logger.log('Discussions Associated', {
-                    'Name': updatedDiscussion.title,
-                    'ID': updatedDiscussion.id,
-                    'Group Category': discussion.newCategory.name,
-                });
+                var reportData = {
+                    courseID: targetCourseID,
+                    message: `Discussion ${updatedDiscussion.title} associated`,
+                    Name: updatedDiscussion.title,
+                    ID: updatedDiscussion.id,
+                    groupCategory: discussion.newCategory.name,
+                };
+                if (report.enabled) logReport(reportData, 'data');
+                report.data.push(reportData);
                 resolve(discussion);
             });
         });

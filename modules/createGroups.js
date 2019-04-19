@@ -1,7 +1,8 @@
 const canvas = require('canvas-wrapper');
 const asyncLib = require('async');
+const logReport = require('./logReport.js');
 
-module.exports = (sourceCourseID, targetCourseID, groupData, logger) => {
+module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
 
     function makeGroups(category, callback) {
 
@@ -22,11 +23,15 @@ module.exports = (sourceCourseID, targetCourseID, groupData, logger) => {
                     return;
                 }
                 category.newCategory.newGroups.push(newGroup);
-                logger.log('Groups Created', {
-                    'Name': newGroup.name,
-                    'ID': newGroup.id,
-                    'Category': category.newCategory.name
-                });
+                var reportData = {
+                    courseID: targetCourseID,
+                    message: `Group ${newGroup.name} created`,
+                    Group: newGroup.name,
+                    ID: newGroup.id,
+                    Category: category.newCategory.name
+                };
+                if (report.enabled) logReport(reportData, 'data');
+                report.data.push(reportData);
                 eachCallback(null);
             });
         }

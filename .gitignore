@@ -1,3 +1,5 @@
 node_modules/
-Group Copy.html
-Group Copy.json
+*.json
+*.csv
+!package.json
+!package-lock.json
