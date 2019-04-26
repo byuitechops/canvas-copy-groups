@@ -17,7 +17,10 @@ module.exports = (input, i) => {
     let report = { source: source, target: target, enabled: input.logReport, data: [], errors: [] };
     return retrieveGroupData(source, report)
         .then(groupData => {
-            return deleteExistingMatches(source, target, groupData, report);
+            if (input.deleteMatchingGroups === true) {
+                return deleteExistingMatches(source, target, groupData, report);
+            }
+            return groupData;
         })
         .then(groupData => {
             return createCategories(source, target, groupData, report);

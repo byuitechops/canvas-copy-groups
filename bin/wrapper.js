@@ -25,6 +25,11 @@ async function getInput() {
             default: true
         }, {
             type: 'confirm',
+            name: 'deleteMatchingGroups',
+            message: 'Delete existing matches in target course?',
+            default: true
+        }, {
+            type: 'confirm',
             name: 'logReport',
             message: 'Log report to console?',
             default: true
