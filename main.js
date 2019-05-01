@@ -23,7 +23,7 @@ module.exports = (input, i) => {
             return groupData;
         })
         .then(groupData => {
-            return createCategories(source, target, groupData, report);
+            return createCategories(source, target, groupData, report, input.deleteMatchingGroups);
         })
         .then(groupData => {
             return createGroups(source, target, groupData, report);

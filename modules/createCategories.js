@@ -2,7 +2,7 @@ const canvas = require('canvas-wrapper');
 const asyncLib = require('async');
 const logReport = require('./logReport.js');
 
-module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
+module.exports = (sourceCourseID, targetCourseID, groupData, report, deleteMatchingGroups) => {
 
     function hasNoExistingCategory(category) {
         return new Promise((resolve, reject) => {
@@ -11,11 +11,9 @@ module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
                 var existingCategory = categories.find(existingCat => existingCat.name === category.name);
                 if (existingCategory !== undefined) {
                     // if category already exists resolve on false
-                    console.log('my mom');
                     resolve(false);
                 } else {
                     // if category does not exist resolve on true
-                    console.log('there is no my mom')
                     resolve(true);
                 }
             });
@@ -23,7 +21,7 @@ module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
     }
 
     function makeCategories(category, index, callback) {
-        if (hasNoExistingCategory(category) == true) {
+        if (hasNoExistingCategory(category) === true || deleteMatchingGroups === true) {
             var categorySettings = {
                 name: category.name,
                 self_signup: category.self_signup,
@@ -35,7 +33,7 @@ module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
             canvas.post(`/api/v1/courses/${targetCourseID}/group_categories`, categorySettings, (err, newCategory) => {
                 if (err) {
                     // If it is already being used, remove the category from the category array
-                    if (err.message.includes('already in use') && report.deleteMatchingGroups === true) {
+                    if (err.message.includes('already in use')) {
                         var reportError = {
                             courseID: targetCourseID,
                             message: `${category.name} is already in course`,
@@ -66,6 +64,7 @@ module.exports = (sourceCourseID, targetCourseID, groupData, report) => {
                 }
             });
         } else {
+            category.existing = true;
             var reportData = {
                 courseID: targetCourseID,
                 message: `Group category ${category.name} exists in target course`
