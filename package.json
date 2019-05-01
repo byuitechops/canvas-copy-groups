@@ -51,6 +51,7 @@
     "copyGroups": "./bin/bin.js",
     "wrapCopyGroups": "./bin/wrapper.js"
   },
+  "preferGlobal": true,
   "version": "2.0.0",
   "devDependencies": {},
   "repository": {
